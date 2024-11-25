@@ -10,27 +10,166 @@ keys.addEventListener(
 
       if (element.target.matches('button')) {
         const key = element.target;
-        const previousKeyType = calculator.dataset.previousKeyType;
         const action = key.dataset.action;
         const keyContent = key.textContent;
         const displayNum = display.textContent;
 
-        if (action === 'calculate') {
+        if (!action) { // Number was pushed.
 
-          // Example usage:
-          let expr1 = "1+2*3-4/5^6";
-          let expr2 = "((((1+2)*3)-4)/5)^6";
-          let expr3 = "(1/999 999 999.999)×999 999 999.999";
-          let expr4 = "sin(2)-cos(2)";
-          let expr5 = "1-(1^-26)";
-          let expr6 = "-1*-1";
+          if (calculator.dataset.previousKeyType === 'calculate')
+            calculator.dataset.previousKeyType = 'clear';
+
+          addToDisplay(keyContent);
+          calculator.dataset.previousKeyType = 'number';
           
-          append(expr2);
-          calculate();
-          console.log(displayValue)
+        } else { // operator or function
 
+          switch (action) {
+
+            case 'clear':
+              display.textContent = '0';
+              calculator.dataset.previousKeyType = 'clear';
+              break;
+            
+            case 'clear-entry':
+              if (calculator.dataset.previousKeyType === 'calculate') {
+
+                display.textContent = '0';
+                calculator.dataset.previousKeyType = 'clear';
+
+              } else 
+              
+              if (display.textContent.length > 1){
+
+                display.textContent = displayNum.slice(0, -1);
+  
+              } else {
+  
+                display.textContent = '0';
+                calculator.dataset.previousKeyType = 'clear';
+  
+              }
+
+              break;
+            
+            case 'divide':
+              addToDisplay('/');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+            
+            case 'multiply':
+              addToDisplay('*');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+            
+            case 'subtract':
+              addToDisplay('-');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+            
+            case 'add':
+              addToDisplay('+');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+            
+            case 'decimal-point':
+              addToDisplay('.');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'sin':
+              addToDisplay('sin(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'cos':
+              addToDisplay('cos(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'tan':
+              addToDisplay('tan(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'log10':
+              addToDisplay('log(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'open-parenthesis':
+              addToDisplay('(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'close-parenthesis':
+              addToDisplay(')');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'square-root':
+              addToDisplay('sqrt(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'squared':
+              addToDisplay('^2');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'power':
+              addToDisplay('^');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'exp':
+              addToDisplay('exp(');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'factorial':
+              addToDisplay('!');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+
+            case 'pi':
+              addToDisplay('\u03C0');
+              calculator.dataset.previousKeyType = 'operator';
+              break;
+            
+            case 'calculate':
+              // Example usage:
+              // let expr1 = "1+2*3-4/5^6";
+              // let expr2 = "((((1+2)*3)-4)/5)^6";
+              // let expr3 = "(1/999 999 999.999)×999 999 999.999";
+              // let expr4 = "sin(2)-cos(2)";
+              // let expr5 = "1-(1^-26)";
+              // let expr6 = "-1*-1";
+              
+              let factor = Math.pow(10, 10);
+              display.textContent = Math.round(calculate() * factor) / factor;
+              calculator.dataset.previousKeyType = 'calculate';
+              break;
+            
+            }
+
+          }
+
+
+        // helper function.
+        function addToDisplay(str) {
+          if (display.textContent.length < 20){
+
+            if (
+              calculator.dataset.previousKeyType === 'clear' || 
+              !calculator.dataset.previousKeyType 
+            )
+              display.textContent = str;
+            else
+              display.textContent += str;
+          }
+        
         }
-          
       }
     })
 
@@ -55,19 +194,19 @@ function deleteLast() {
 // Evaluate the expression without using eval()
 function calculate() {
   try {
-      const tokens = tokenize(displayValue);
+      const tokens = tokenize(display.textContent);
       const postfix = infixToPostfix(tokens);
       const result = evaluatePostfix(postfix);
-      displayValue = result.toString();
+      return result.toString();
   } catch (error) {
-      displayValue = 'Error';
+      return 'Error';
   }
 }
 
 // Tokenize the input expression
 function tokenize(expression) {
 
-  const regex = /(\d+(\.\d+)?|[+\-*/^()!]|sin|cos|tan|log|sqrt|exp)/g;
+  const regex = /(\d+(\.\d+)?|[+\-*/^()!'\u03C0']|sin|cos|tan|log|sqrt|exp)/g;
   const tokens = expression.match(regex);
 
   if (tokens) {
@@ -109,6 +248,7 @@ function infixToPostfix(tokens) {
         sqrt: 4,
         exp: 4,
         '!': 4,
+        '\u03C0': 4,
     };
     const associativity = {
         '+': 'L',
@@ -179,49 +319,70 @@ function evaluatePostfix(postfix) {
 
         const b = stack.pop();
         const a = stack.pop();
+
         switch (token) {
+
           case '+':
-              stack.push(a + b);
-              break;
+            stack.push(a + b);
+            break;
+
           case '-':
-              stack.push(a - b);
-              break;
+            stack.push(a - b);
+            break;
+
           case '*':
-              stack.push(a * b);
-              break;
+            stack.push(a * b);
+            break;
+
           case '/':
-              stack.push(a / b);
-              break;
+            stack.push(a / b);
+            break;
+
           case '^':
-              stack.push(Math.pow(a, b));
-              break;
+            stack.push(Math.pow(a, b));
+            break;
+
         }
 
-      } else if (['sin', 'cos', 'tan', 'log', 'sqrt', 'exp', '!'].includes(token)) {
+      } else if (['sin', 'cos', 'tan', 'log', 'sqrt', 'exp', '!', '\u03C0'].includes(token)) {
         
         const a = stack.pop();
+
         switch (token) {
           case 'sin':
-              stack.push(Math.sin(a));
-              break;
+            stack.push(Math.sin(a));
+            break;
+
           case 'cos':
-              stack.push(Math.cos(a));
-              break;
+            stack.push(Math.cos(a));
+            break;
+
           case 'tan':
-              stack.push(Math.tan(a));
-              break;
+            stack.push(Math.tan(a));
+            break;
+
           case 'log':
-              stack.push(Math.log(a));
-              break;
+            stack.push(Math.log(a));
+            break;
+
           case 'sqrt':
-              stack.push(Math.sqrt(a));
-              break;
+            stack.push(Math.sqrt(a));
+            break;
+
           case 'exp':
-              stack.push(Math.exp(a));
-              break;
+            stack.push(Math.exp(a));
+            break;
+
           case '!':
-              stack.push(factorial(a));
-              break;
+            stack.push(factorial(a));
+            break;
+
+          case '\u03C0':
+            if (a)
+              stack.push(a * Math.PI)
+            else
+              stack.push(Math.PI)
+            break;
         }
 
       }
@@ -255,6 +416,7 @@ function factorial(n) {
   return result;
 
 }
+
 
 /* ------------------ Shunting Yard Algorithm Psuedocode ---------------------
 - While there are tokens to be read:
