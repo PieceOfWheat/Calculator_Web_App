@@ -15,369 +15,222 @@ keys.addEventListener(
         const keyContent = key.textContent;
         const displayNum = display.textContent;
 
-        // Auxilary functions
-        function clearCalculator() {
-          calculator.dataset.firstValue = undefined;
-          calculator.dataset.modValue = undefined;
-          calculator.dataset.operator = undefined;
-          display.textContent = '0';
-          isClean = true;
-          isNegative = false;
-          calculator.dataset.previousKeyType = 'clear';
+        if (action === 'calculate') {
+
+          // Example usage:
+          let expr1 = "1+2*3-4/5^6";
+          let expr2 = "((((1+2)*3)-4)/5)^6";
+          let expr3 = "(1/999 999 999.999)×999 999 999.999";
+          let expr4 = "sin(180°)-cos(2pi)";
+          let expr5 = "1-(1^-26)";
+          let expr6 = "-1*-1";
+          
+          // console.log(scientificCalculator(expr1)); // Expected output: 8
+          // console.log(scientificCalculator(expr2)); // Example: sqrt(16) + sin(30 degrees)
+          // console.log(scientificCalculator(expr3)); // Expected output: 13
+          // console.log(scientificCalculator(expr4)); // Expected output: 13
+          // console.log(scientificCalculator(expr5)); // Expected output: 13
+          // console.log(scientificCalculator(expr6)); // Expected output: 13
+          // console.log(parseMathExpression("((((1+2)x3)-4)÷5)^6")); // Output: 1
+          // console.log(parseMathExpression("(1 + 2*3)")); // Output: 1
+          append(expr2);
+          calculate();
+          console.log(displayValue)
+
         }
-
-        // check if its a NUMBER key.
-        if (!action) {
-          console.log('');
-          console.log('NUMBER key was pressed');
-          if (previousKeyType === 'calculate') {
-            clearCalculator();
-          }
-
-          calculator.dataset.previousKeyType = 'number';
-
-          if (display.textContent === '0' ||
-              previousKeyType === 'operator' && isNegative == false) {
-            display.textContent = keyContent;
-
-          } else {
-            display.textContent = displayNum + keyContent;
-            isNegative = false;
-          }
-
-        } else {
-          console.log('');
-          console.log('NON-NUMBER key was pressed');
-
-          // check for clear key.
-          if (action === 'clear') {
-            clearCalculator();
-            console.log('Calculator was cleared.')
-          }
-
-          // check if key press is valid.
-          else if ((!previousKeyType || previousKeyType === 'clear' ||
-                    previousKeyType === 'operator') &&
-                   (action !== 'subtract' && action !== 'sin' &&
-                    action !== 'cos' && action !== 'tan')) {
-            document.activeElement.blur();
-
-            // check which key was pressed.
-          } else {
-            // check for negative number initial input.
-            if ((!previousKeyType || previousKeyType === 'clear') &&
-                action === 'subtract') {
-              isNegative = true;
-              display.textContent = '-';
-            }
-
-            // Operator (+ - * /)
-            if (action === 'add' || action === 'subtract' ||
-                action === 'multiply' || action === 'divide') {
-              var firstValue = calculator.dataset.firstValue;
-              const lastOperator = calculator.dataset.operator;
-              console.log(lastOperator)
-
-                  if (firstValue && !isClean &&
-                      (previousKeyType !== 'operator' ||
-                       lastOperator === 'sin' || lastOperator === 'cos' ||
-                       lastOperator === 'tan') &&
-                      previousKeyType !== 'calculate' &&
-                      previousKeyType !== 'clear') {
-                const secondValue = displayNum;
-                firstValue = calculate(firstValue, action, secondValue);
-                display.textContent = firstValue;
-                calculator.dataset.firstValue = firstValue;
-              }
-              else {
-                calculator.dataset.firstValue = displayNum;
-              }
-
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'operator';
-              isClean = false;
-
-            }
-
-            // Decimal
-            else if (action === 'decimal-point') {
-              calculator.dataset.previousKeyType = 'decimal';
-
-              if (!displayNum.includes('.'))
-                display.textContent = displayNum + '.';
-              else if (previousKeyType === 'operator')
-                display.textContent = '0.';
-
-            }
-
-            // Sin
-            else if (action === 'sin') {
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.sin(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // Cos
-            else if (action === 'cos') {
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.cos(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // Tan
-            else if (action === 'tan') {
-              console.log('TAN was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.tan(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // log10
-            else if (action === 'log10') {
-              console.log('LOG10 was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.log10(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-
-            // ln
-            else if (action === 'ln') {
-              console.log('ln was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.log(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // exp
-            else if (action === 'exp') {
-              console.log('EXP was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.exp(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // square-root
-            else if (action === 'square-root') {
-              console.log('SQRT was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.sqrt(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // squared
-            else if (action === 'squared') {
-              console.log('SQRD was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.pow(parseFloat(display.textContent), 2);
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // cubed
-            else if (action === 'cubed') {
-              console.log('CUBED was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.pow(parseFloat(display.textContent), 3);
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // percent
-            else if (action === 'percent') {
-              console.log('PERCENT was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  parseFloat(display.textContent) / 100;
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // factorial
-            else if (action === 'factorial') {
-              console.log('FACTORIAL was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  factorial(parseFloat(display.textContent));
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // pi
-            else if (action === 'pi') {
-              console.log('PI was pressed');
-              var firstValue;
-              calculator.dataset.firstValue = firstValue =
-                  Math.PI * parseFloat(display.textContent);
-              display.textContent = round(firstValue);
-
-              document.activeElement.blur();
-              calculator.dataset.operator = action;
-              calculator.dataset.previousKeyType = 'calculate';
-
-            }
-
-            // Clear
-            else if (action === 'clear-entry') {
-              if (previousKeyType === 'calculate') {
-                clearCalculator();
-
-              } else {
-                display.textContent = '0';
-                calculator.dataset.previousKeyType = 'clear-entry';
-              }
-
-            }
-
-            // Calculate
-            else if (action === 'calculate') {
-              console.log('Calculate key was pressed.')
-
-                  let firstValue = calculator.dataset.firstValue;
-              let secondValue = displayNum;
-              const operator = calculator.dataset.operator;
-
-              if (previousKeyType === 'operator') {
-                display.textContent = firstValue;
-
-              } else if (previousKeyType === 'calculate') {
-                firstValue = displayNum;
-                secondValue = calculator.dataset.modValue;
-                display.textContent =
-                    calculate(firstValue, operator, secondValue);
-
-              } else if (isNegative) {
-                display.textContent = displayNum;
-
-              } else {
-                if (firstValue)
-                  display.textContent =
-                      calculate(firstValue, operator, secondValue);
-                else
-                  display.textContent = displayNum;
-              }
-
-              calculator.dataset.previousKeyType = 'calculate';
-              calculator.dataset.modValue = secondValue;
-            }
-          }
-        }
+          
       }
-
     })
 
+// Global variable to hold the input expression
+let displayValue = '';
 
-    // Auxilliary functions
-    function calculate(value1 = 0, operator, value2 = 0) {
-
-      // preprocessing
-      n1 = parseFloat(value1);
-      n2 = parseFloat(value2);
-
-      // calculation
-      switch (operator) {
-        case 'add':
-          return round(n1 + n2);
-          break;
-
-        case 'subtract':
-          return round(n1 - n2);
-          break;
-
-        case 'multiply':
-          console.log(round(n1 * n2));
-          return round(n1 * n2);
-          break;
-
-        case 'divide':
-          return round(n1 / n2);
-          break;
-
-        default:
-          return n1;
-      }
-
-    }
-
-function round(x) {
-
-  const factor = Math.pow(10, 10);
-  return Math.round(x * factor) / factor;
-
+// Append a value to the display
+function append(value) {
+  displayValue += value;
 }
 
-function factorial(x) {
-  let result = 1;
-  for (let i = 1; i <= x; i++) {
-    result *= i;
+// Clear the display
+function clearDisplay() {
+  displayValue = '';
+}
+
+// Delete the last character
+function deleteLast() {
+  displayValue = displayValue.slice(0, -1);
+}
+
+// Evaluate the expression without using eval()
+function calculate() {
+  try {
+      const tokens = tokenize(displayValue);
+      const postfix = infixToPostfix(tokens);
+      const result = evaluatePostfix(postfix);
+      displayValue = result.toString();
+  } catch (error) {
+      displayValue = 'Error';
   }
-  return result;
 }
 
+// Tokenize the input expression
+function tokenize(expression) {
+  const regex = /(-?\d+(\.\d+)?|[+\-*/^()!]|sin|cos|tan|log|sqrt|exp)/g;
+  const tokens = expression.match(regex);
 
-/* edge cases:
-  - After pressing calculate, and then pressing only 1 number, following by
-  calculate again,
-    the answer show's NaN instead of the first value. (previous key !== operator
-  || undifined)
-*/
+  // Handle cases where '-' indicates a negative number
+  if (tokens) {
+      const processedTokens = [];
+      tokens.forEach((token, i) => {
+          if (token === '-' && (i === 0 || tokens[i - 1] === '(' || isOperator(tokens[i - 1]))) {
+              // Handle as a negative number
+              processedTokens.push('-' + tokens[i + 1]);
+              tokens.splice(i + 1, 1); // Skip the next token since it's merged
+          } else {
+              processedTokens.push(token);
+          }
+      });
+      return processedTokens;
+  }
+  return [];
+}
+
+// Helper function to check if a token is an operator
+function isOperator(token) {
+  return ['+', '-', '*', '/', '^'].includes(token);
+}
+
+// Convert infix to postfix using the Shunting Yard Algorithm
+function infixToPostfix(tokens) {
+  const precedence = {
+      '+': 1,
+      '-': 1,
+      '*': 2,
+      '/': 2,
+      '^': 3,
+      sin: 4,
+      cos: 4,
+      tan: 4,
+      log: 4,
+      sqrt: 4,
+      exp: 4,
+      '!': 4,
+  };
+  const associativity = {
+      '+': 'L',
+      '-': 'L',
+      '*': 'L',
+      '/': 'L',
+      '^': 'R',
+  };
+  const output = [];
+  const operators = [];
+
+  tokens.forEach(token => {
+      if (!isNaN(token)) {
+          // If the token is a number, add it to the output
+          output.push(parseFloat(token));
+      } else if (token === '(') {
+          operators.push(token);
+      } else if (token === ')') {
+          // Pop operators to the output until '(' is found
+          while (operators.length && operators[operators.length - 1] !== '(') {
+              output.push(operators.pop());
+          }
+          operators.pop(); // Remove '('
+      } else {
+          // If the token is an operator or function
+          while (
+              operators.length &&
+              operators[operators.length - 1] !== '(' &&
+              (
+                  precedence[operators[operators.length - 1]] > precedence[token] ||
+                  (
+                      precedence[operators[operators.length - 1]] === precedence[token] &&
+                      associativity[token] === 'L'
+                  )
+              )
+          ) {
+              output.push(operators.pop());
+          }
+          operators.push(token);
+      }
+  });
+
+  // Pop any remaining operators to the output
+  while (operators.length) {
+      output.push(operators.pop());
+  }
+
+  return output;
+}
+
+// Evaluate postfix expression
+function evaluatePostfix(postfix) {
+  const stack = [];
+
+  postfix.forEach(token => {
+      if (typeof token === 'number') {
+          stack.push(token);
+      } else {
+          if (['+', '-', '*', '/', '^'].includes(token)) {
+              const b = stack.pop();
+              const a = stack.pop();
+              switch (token) {
+                  case '+':
+                      stack.push(a + b);
+                      break;
+                  case '-':
+                      stack.push(a - b);
+                      break;
+                  case '*':
+                      stack.push(a * b);
+                      break;
+                  case '/':
+                      stack.push(a / b);
+                      break;
+                  case '^':
+                      stack.push(Math.pow(a, b));
+                      break;
+              }
+          } else if (['sin', 'cos', 'tan', 'log', 'sqrt', 'exp', '!'].includes(token)) {
+              const a = stack.pop();
+              switch (token) {
+                  case 'sin':
+                      stack.push(Math.sin(a));
+                      break;
+                  case 'cos':
+                      stack.push(Math.cos(a));
+                      break;
+                  case 'tan':
+                      stack.push(Math.tan(a));
+                      break;
+                  case 'log':
+                      stack.push(Math.log(a));
+                      break;
+                  case 'sqrt':
+                      stack.push(Math.sqrt(a));
+                      break;
+                  case 'exp':
+                      stack.push(Math.exp(a));
+                      break;
+                  case '!':
+                        stack.push(factorial(a));
+                        break;
+                }
+            }
+        }
+    });
+
+    return stack[0];
+}
+
+// Factorial function
+function factorial(n) {
+    if (n < 0) return NaN; // Factorial of negative numbers is undefined
+    if (n === 0 || n === 1) return 1;
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
