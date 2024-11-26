@@ -13,15 +13,17 @@
     <div class="calculator">
 
         <div class="display">0</div>
-
+        
         <div class="calculator-keys">
           <div>
             
-            <div class="keys" id="ultra-wide-key">
+            <!-- <div class="keys" id="ultra-wide-key">
               Simple Scientific Calculator <br />
               <small>(All trig. inputs are in radians)</small>
-            </div>
-
+            </div> -->
+            <button class="keys" id="operator" data-action="square-root">&radic;</button>
+            <button class="keys" id="operator" data-action="cubic-root"><sup>3</sup>&radic;</button>
+            <button class="keys" id="operator" data-action="percent">%</button>
             <button class="keys AC" id="wide-key" data-action="clear">AC</button>
             <button class="keys CE" data-action="clear-entry">CE</button>
             <button class="keys" id="operator" data-action="divide">&divide;</button>
@@ -49,8 +51,8 @@
           </div>
           
           <div>
-            <button class="keys" id="operator" data-action="square-root">&radic;</button>
-            <button class="keys" id="operator" data-action="squared">x<sup>2</sup></button>
+            <button class="keys" id="operator" data-action="modulo">mod</button>
+            <button class="keys" id="operator" data-action="degrees">deg</sup></button>
             <button class="keys" id="operator" data-action="power">x<sup>^</sup></button>
             <button class="keys">1</button>
             <button class="keys">2</button>
